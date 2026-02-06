@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrandValidator - Validate Your Brand Name Across 7 Dimensions</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 20px; }
+        
+        header { text-align: center; margin-bottom: 40px; }
+        .logo { font-size: 3rem; margin-bottom: 10px; }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .tagline { color: #888; font-size: 1.1rem; }
+        
+        .input-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #aaa; font-size: 0.9rem; }
+        
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, textarea:focus { outline: none; border-color: #00d9ff; }
+        textarea { resize: vertical; min-height: 80px; }
+        
+        .options { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
+        .option { display: flex; align-items: center; gap: 8px; }
+        .option input[type="number"] {
+            width: 60px;
+            padding: 8px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            text-align: center;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            color: #1a1a2e;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,217,255,0.3);
+        }
+        .btn-secondary { background: rgba(255,255,255,0.1); color: #fff; }
+        .btn-small { padding: 8px 16px; font-size: 0.9rem; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .domain-requirements {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .domain-check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            padding: 8px 14px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
+        }
+        .domain-check:hover { border-color: rgba(255,255,255,0.3); }
+        .domain-check:has(input:checked) {
+            background: rgba(0,217,255,0.15);
+            border-color: #00d9ff;
+            color: #00d9ff;
+        }
+        .domain-check input { cursor: pointer; }
+        
+        /* Favorites Section */
+        .favorites-section {
+            display: none;
+            background: linear-gradient(135deg, rgba(255,0,100,0.1) 0%, rgba(255,100,150,0.05) 100%);
+            border: 1px solid rgba(255,100,150,0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .favorites-section.active { display: block; }
+        .favorites-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .favorites-header h3 { color: #ff6b9d; display: flex; align-items: center; gap: 8px; }
+        .favorites-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .favorite-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: rgba(255,100,150,0.15);
+            border: 1px solid rgba(255,100,150,0.3);
+            border-radius: 20px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .favorite-tag:hover { background: rgba(255,100,150,0.25); }
+        .favorite-tag .remove {
+            color: #ff6b9d;
+            font-weight: bold;
+            margin-left: 4px;
+        }
+        .favorite-tag .remove:hover { color: #ff4477; }
+        
+        /* Filter Bar */
+        .filter-bar {
+            display: none;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-bar.active { display: flex; }
+        .filter-group { display: flex; align-items: center; gap: 10px; }
+        .filter-group label { margin: 0; font-size: 0.85rem; }
+        .filter-group select {
+            padding: 8px 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.3);
+            color: #fff;
+            font-size: 0.9rem;
+        }
+        .filter-chip {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: transparent;
+            color: #aaa;
+            transition: all 0.2s;
+        }
+        .filter-chip:hover { border-color: #00d9ff; color: #00d9ff; }
+        .filter-chip.active { background: #00d9ff; color: #1a1a2e; border-color: #00d9ff; }
+        .filter-chip.favorites { border-color: rgba(255,100,150,0.5); }
+        .filter-chip.favorites:hover { border-color: #ff6b9d; color: #ff6b9d; }
+        .filter-chip.favorites.active { background: #ff6b9d; color: #1a1a2e; border-color: #ff6b9d; }
+        
+        .results { display: none; }
+        .results.active { display: block; }
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .results-header h2 { font-size: 1.5rem; }
+        
+        /* Name Cards Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+        
+        .name-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #00ff88;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .name-card:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+        .name-card.blocked { border-left-color: #ff4444; opacity: 0.7; }
+        .name-card.warning { border-left-color: #ffaa00; }
+        .name-card.favorited { border-left-color: #ff6b9d; }
+        
+        .name-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .name-title { font-size: 1.4rem; font-weight: 700; }
+        .name-score {
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 15px;
+            background: rgba(0,255,136,0.2);
+            color: #00ff88;
+        }
+        .name-score.low { background: rgba(255,68,68,0.2); color: #ff4444; }
+        .name-score.medium { background: rgba(255,170,0,0.2); color: #ffaa00; }
+        
+        .favorite-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.4;
+            transition: all 0.2s;
+            padding: 5px;
+        }
+        .favorite-btn:hover { opacity: 1; transform: scale(1.2); }
+        .favorite-btn.active { opacity: 1; }
+        
+        .letter-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        .letter-btn {
+            width: 32px;
+            height: 32px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(0,0,0,0.2);
+            color: #888;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .letter-btn:hover { border-color: #00d9ff; color: #00d9ff; }
+        .letter-btn.active { background: #00d9ff; color: #1a1a2e; border-color: #00d9ff; }
+        .letter-btn.disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .domain-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+        .domain-pill {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        .domain-pill.available { background: rgba(0,255,136,0.2); color: #00ff88; }
+        .domain-pill.taken { background: rgba(255,68,68,0.15); color: #ff6666; }
+        
+        .card-meta { font-size: 0.8rem; color: #888; }
+        .card-meta span { margin-right: 12px; }
+        
+        /* Detail Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+        .modal-overlay.active { display: block; }
+        
+        .modal {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #1e1e2e;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, #2a2a4a 0%, #1a1a3a 100%);
+            padding: 30px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: relative;
+        }
+        .modal-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .modal-score {
+            display: inline-block;
+            font-size: 1.2rem;
+            padding: 8px 20px;
+            border-radius: 25px;
+            background: rgba(0,255,136,0.2);
+            color: #00ff88;
+        }
+        .modal-favorite {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid rgba(255,100,150,0.5);
+            background: transparent;
+            color: #ff6b9d;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal-favorite:hover { background: rgba(255,100,150,0.15); }
+        .modal-favorite.active { background: #ff6b9d; color: #1a1a2e; border-color: #ff6b9d; }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        .modal-close:hover { color: #fff; }
+        
+        .modal-body { padding: 30px; }
+        
+        .report-section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .report-section h3 {
+            font-size: 1rem;
+            color: #00d9ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .domain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+        .domain-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        .domain-item.available { border-left: 3px solid #00ff88; }
+        .domain-item.taken { border-left: 3px solid #ff4444; opacity: 0.6; }
+        .domain-price { font-size: 0.85rem; color: #888; }
+        
+        .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+            font-size: 0.9rem;
+        }
+        .search-result {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .search-result:last-child { border-bottom: none; }
+        .search-result a { color: #00d9ff; text-decoration: none; }
+        .search-result a:hover { text-decoration: underline; }
+        .search-result .snippet { color: #888; font-size: 0.85rem; margin-top: 4px; }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        .status-badge.good { background: rgba(0,255,136,0.15); color: #00ff88; }
+        .status-badge.warning { background: rgba(255,170,0,0.15); color: #ffaa00; }
+        .status-badge.bad { background: rgba(255,68,68,0.15); color: #ff6666; }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .info-item label { display: block; color: #888; font-size: 0.8rem; margin-bottom: 4px; }
+        .info-item .value { font-size: 1rem; }
+        
+        .loading { text-align: center; padding: 40px; }
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-top-color: #00d9ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .validate-section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+        .validate-section h3 { margin-bottom: 20px; color: #aaa; }
+        .validate-input { display: flex; gap: 10px; }
+        .validate-input input { flex: 1; }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            color: #666;
+        }
+        footer a { color: #00d9ff; text-decoration: none; }
+        
+        @media (max-width: 600px) {
+            h1 { font-size: 1.8rem; }
+            .options { flex-direction: column; }
+            .results-grid { grid-template-columns: 1fr; }
+            .filter-bar { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">🔮</div>
+            <h1>BrandValidator</h1>
+            <p class="tagline">AI-Powered Brand Name Generator & Validator</p>
+        </header>
+        
+        <!-- Favorites Section -->
+        <section class="favorites-section" id="favoritesSection">
+            <div class="favorites-header">
+                <h3>❤️ Favorites <span id="favCount">(0)</span></h3>
+                <button class="btn btn-secondary btn-small" onclick="exportFavorites()">📥 Export</button>
+            </div>
+            <div class="favorites-list" id="favoritesList"></div>
+        </section>
+        
+        <section class="input-section">
+            <div class="input-group">
+                <label for="concept">Describe your business or product</label>
+                <textarea id="concept" placeholder="e.g., Enterprise AI knowledge platform with Swiss precision, privacy-first approach..."></textarea>
+            </div>
+            
+            <div class="options">
+                <div class="option">
+                    <label>Min length:</label>
+                    <input type="number" id="minLen" value="4" min="3" max="10">
+                </div>
+                <div class="option">
+                    <label>Max length:</label>
+                    <input type="number" id="maxLen" value="6" min="4" max="12">
+                </div>
+                <div class="option">
+                    <label>Generate:</label>
+                    <input type="number" id="count" value="50" min="10" max="200">
+                </div>
+            </div>
+            
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Required domains (name won't show if these aren't available):</label>
+                <div class="domain-requirements">
+                    <label class="domain-check"><input type="checkbox" id="req-com" checked> .com</label>
+                    <label class="domain-check"><input type="checkbox" id="req-ai"> .ai</label>
+                    <label class="domain-check"><input type="checkbox" id="req-io"> .io</label>
+                    <label class="domain-check"><input type="checkbox" id="req-ch"> .ch</label>
+                </div>
+            </div>
+            
+            <div class="input-group" style="margin-top: 15px;">
+                <label class="domain-check" style="display: inline-flex; margin-bottom: 10px;">
+                    <input type="checkbox" id="smartFilter" checked> 
+                    <span>🧠 Smart Filter (AI checks if names sound good & are easy to spell)</span>
+                </label>
+            </div>
+            
+            <div class="input-group" style="margin-top: 15px;">
+                <label>Starting letters (optional, max 3 — leave empty for all):</label>
+                <div class="letter-filter" id="letterFilter">
+                    <button class="letter-btn" data-letter="A">A</button>
+                    <button class="letter-btn" data-letter="B">B</button>
+                    <button class="letter-btn" data-letter="C">C</button>
+                    <button class="letter-btn" data-letter="D">D</button>
+                    <button class="letter-btn" data-letter="E">E</button>
+                    <button class="letter-btn" data-letter="F">F</button>
+                    <button class="letter-btn" data-letter="G">G</button>
+                    <button class="letter-btn" data-letter="H">H</button>
+                    <button class="letter-btn" data-letter="I">I</button>
+                    <button class="letter-btn" data-letter="J">J</button>
+                    <button class="letter-btn" data-letter="K">K</button>
+                    <button class="letter-btn" data-letter="L">L</button>
+                    <button class="letter-btn" data-letter="M">M</button>
+                    <button class="letter-btn" data-letter="N">N</button>
+                    <button class="letter-btn" data-letter="O">O</button>
+                    <button class="letter-btn" data-letter="P">P</button>
+                    <button class="letter-btn" data-letter="Q">Q</button>
+                    <button class="letter-btn" data-letter="R">R</button>
+                    <button class="letter-btn" data-letter="S">S</button>
+                    <button class="letter-btn" data-letter="T">T</button>
+                    <button class="letter-btn" data-letter="U">U</button>
+                    <button class="letter-btn" data-letter="V">V</button>
+                    <button class="letter-btn" data-letter="W">W</button>
+                    <button class="letter-btn" data-letter="X">X</button>
+                    <button class="letter-btn" data-letter="Y">Y</button>
+                    <button class="letter-btn" data-letter="Z">Z</button>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="generateBtn" onclick="generateNames()">
+                <span>🎲</span> Generate Names
+            </button>
+        </section>
+        
+        <section class="validate-section">
+            <h3>Or validate a specific name:</h3>
+            <div class="validate-input">
+                <input type="text" id="validateName" placeholder="Enter a name to validate...">
+                <button class="btn btn-secondary" onclick="validateSingle()">
+                    <span>🔍</span> Deep Validate
+                </button>
+            </div>
+            <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1);">
+                <button class="btn btn-secondary" id="nextTenBtn" onclick="showNextTen()" style="display: none;">
+                    <span>➡️</span> Show Next 10
+                </button>
+                <span id="nextTenInfo" style="margin-left: 15px; color: #666; font-size: 0.9rem;"></span>
+            </div>
+        </section>
+        
+        <!-- Filter Bar -->
+        <div class="filter-bar" id="filterBar">
+            <div class="filter-group">
+                <label>Filter:</label>
+                <button class="filter-chip active" data-filter="all" onclick="setFilter('all')">All</button>
+                <button class="filter-chip" data-filter="allDomains" onclick="setFilter('allDomains')">All Domains ✓</button>
+                <button class="filter-chip" data-filter="viable" onclick="setFilter('viable')">Viable Only</button>
+                <button class="filter-chip favorites" data-filter="favorites" onclick="setFilter('favorites')">❤️ Favorites</button>
+            </div>
+            <div class="filter-group">
+                <label>Sort:</label>
+                <select id="sortSelect" onchange="sortResults()">
+                    <option value="score-desc">Score: High → Low</option>
+                    <option value="score-asc">Score: Low → High</option>
+                    <option value="domains-desc">Domains: Most → Least</option>
+                    <option value="alpha">Alphabetical</option>
+                </select>
+            </div>
+            <div class="filter-group" style="margin-left: auto;">
+                <span id="filteredCount" style="color: #888; font-size: 0.9rem;"></span>
+            </div>
+        </div>
+        
+        <section class="results" id="results">
+            <div class="results-header">
+                <h2>Results</h2>
+                <span id="resultCount"></span>
+            </div>
+            <div class="results-grid" id="resultsContainer"></div>
+        </section>
+        
+        <div class="loading" id="loading" style="display: none;">
+            <div class="spinner"></div>
+            <p id="loadingText">Generating and validating names...</p>
+        </div>
+        
+        <!-- Detail Modal -->
+        <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+            <div class="modal" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                    <h2 id="modalName">Name</h2>
+                    <div id="modalAlgorithm" style="color: #888; font-size: 0.9rem; margin-bottom: 10px;"></div>
+                    <div class="modal-actions">
+                        <span class="modal-score" id="modalScore">100/100</span>
+                        <button class="modal-favorite" id="modalFavorite" onclick="toggleModalFavorite()">
+                            <span id="modalFavIcon">🤍</span> <span id="modalFavText">Add to Favorites</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Dynamic content -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Built by <a href="https://48nauts.com" target="_blank">48nauts</a></p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                7-Level Checks: Dictionary • Translations • Companies • Domains • Trademarks • Packages • Phonetics
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        const API_BASE = '/api';
+        let allResults = [];
+        let currentFilter = 'all';
+        let favorites = JSON.parse(localStorage.getItem('brandvalidator_favorites') || '{}');
+        let currentModalName = null;
+        let shownNames = new Set(); // Track names we've already shown
+        let pendingCandidates = []; // Candidates not yet validated
+        let selectedLetters = new Set(); // Selected starting letters
+        let currentSettings = {}; // Store current generation settings
+        
+        // Initialize favorites display
+        updateFavoritesUI();
+        
+        // Letter filter setup
+        document.querySelectorAll('.letter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const letter = btn.dataset.letter;
+                if (selectedLetters.has(letter)) {
+                    selectedLetters.delete(letter);
+                    btn.classList.remove('active');
+                } else if (selectedLetters.size < 3) {
+                    selectedLetters.add(letter);
+                    btn.classList.add('active');
+                }
+                updateLetterButtons();
+            });
+        });
+        
+        function updateLetterButtons() {
+            document.querySelectorAll('.letter-btn').forEach(btn => {
+                const letter = btn.dataset.letter;
+                if (selectedLetters.size >= 3 && !selectedLetters.has(letter)) {
+                    btn.classList.add('disabled');
+                } else {
+                    btn.classList.remove('disabled');
+                }
+            });
+        }
+        
+        // Syllable banks for client-side generation - full alphabet coverage
+        const STARTS = [
+            // Single vowels
+            'a','e','i','o','u',
+            // B
+            'ba','be','bi','bo','bu','bra','bre','bri','bro',
+            // C
+            'ca','ce','ci','co','cu','cla','cle','cra','cre','cri',
+            // D
+            'da','de','di','do','du','dra','dre','dri',
+            // F
+            'fa','fe','fi','fo','fu','fla','fle','flo','fra','fre',
+            // G
+            'ga','ge','gi','go','gu','gla','gle','gra','gre','gri','gro',
+            // H
+            'ha','he','hi','ho','hu',
+            // J
+            'ja','je','ji','jo','ju',
+            // K
+            'ka','ke','ki','ko','ku','kra','kre','kri',
+            // L
+            'la','le','li','lo','lu',
+            // M
+            'ma','me','mi','mo','mu',
+            // N
+            'na','ne','ni','no','nu',
+            // P
+            'pa','pe','pi','po','pu','pla','ple','pra','pre','pri','pro',
+            // Q
+            'qua','que','qui','quo',
+            // R
+            'ra','re','ri','ro','ru',
+            // S
+            'sa','se','si','so','su','sha','she','shi','sho','ska','ske','ski','sla','sle','sma','sme','sna','sne','spa','spe','spi','sta','ste','sti','sto','stra','stre','stri',
+            // T
+            'ta','te','ti','to','tu','tra','tre','tri','tro',
+            // V
+            'va','ve','vi','vo','vu','vra','vre',
+            // W
+            'wa','we','wi','wo',
+            // X
+            'xa','xe','xi','xo',
+            // Y
+            'ya','ye','yi','yo','yu',
+            // Z
+            'za','ze','zi','zo','zu','zra','zre'
+        ];
+        const MIDS = ['n','l','m','r','s','v','x','t','k','d','b','g','p','z','f','th','nd','nt','st','sk','sp'];
+        const ENDS = [
+            'a','e','i','o','u',
+            'ia','ie','io','iu',
+            'an','en','in','on','un',
+            'ar','er','ir','or','ur',
+            'al','el','il','ol','ul',
+            'as','es','is','os','us',
+            'ax','ex','ix','ox','ux',
+            'ta','te','ti','to',
+            'la','le','li','lo',
+            'na','ne','ni','no',
+            'ra','re','ri','ro',
+            'sa','se','si','so',
+            'va','ve','vi','vo',
+            'ka','ke','ki','ko',
+            'da','de','di','do',
+            'ma','me','mi','mo',
+            'pa','pe','pi','po',
+            'fy','ly','ny','ry','ty','zy'
+        ];
+        const ALGORITHMS = ['Syllable Mix', 'Vowel Start', 'Double Consonant', 'Latin Suffix', 'Tech Pattern'];
+        const BAD = ['ass','shit','fuck','cunt','dick','cock','piss','bitch','nazi','porn','fick','puta',
+            'culo','suka','kuso','anal','fag','sex','rape','cum','tit'];
+        
+        function randomChoice(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+        function isClean(name) { const n = name.toLowerCase(); return !BAD.some(b => n.includes(b)); }
+        function isPronounceable(name) {
+            const n = name.toLowerCase();
+            // Must have vowels
+            if (!/[aeiou]/.test(n)) return false;
+            // No more than 3 consonants in a row
+            if (/[^aeiou]{4,}/.test(n)) return false;
+            // No more than 2 vowels in a row (except common pairs)
+            if (/[aeiou]{3,}/.test(n)) return false;
+            // Reject awkward consonant clusters
+            if (/[qwx]{2,}/.test(n)) return false;
+            if (/[^aeiou][^aeiou][^aeiou]/.test(n) && !/str|ntr|ndr|ngr|mpr|mbr|ncr|scr/.test(n)) {
+                // Allow common 3-consonant clusters, reject others
+                const match = n.match(/[^aeiou]{3}/);
+                if (match && !/^(str|ntr|ndr|spr|scr|thr|chr)/.test(match[0])) return false;
+            }
+            // Reject if ends with awkward consonant clusters
+            if (/[^aeiou]{2,}$/.test(n) && !/ng|nt|nd|st|sk|sp|nk|rk|lt|rt|xt|ft|pt/.test(n.slice(-2))) return false;
+            return true;
+        }
+        
+        function generateCandidates(count, minLen, maxLen, allowedLetters = null) {
+            const names = [];
+            let attempts = 0;
+            
+            // Clean syllable sets for better names
+            const CLEAN_ENDS = ['a','e','i','o','ia','io','is','an','en','on','ar','er','or','al','el','us','ix','ta','la','na','ra','sa','va','ka','ma','pa','da','lo','no','ro','to','li','ni','ri','ti','fy','ly','ry'];
+            const SOFT_MIDS = ['v','l','r','n','m','s','x','z','t','k'];
+            
+            // Filter STARTS by allowed letters if specified
+            let filteredStarts = STARTS;
+            if (allowedLetters && allowedLetters.size > 0) {
+                filteredStarts = STARTS.filter(s => {
+                    const firstChar = s.charAt(0).toUpperCase();
+                    return allowedLetters.has(firstChar);
+                });
+                if (filteredStarts.length === 0) filteredStarts = STARTS; // Fallback
+            }
+            
+            while (names.length < count && attempts < count * 100) {
+                attempts++;
+                let n, algo;
+                const pattern = Math.floor(Math.random() * 6);
+                
+                // Pattern 0: Start + End (simple 2-syllable: Pava, Kora)
+                if (pattern === 0) { 
+                    n = randomChoice(filteredStarts) + randomChoice(CLEAN_ENDS); 
+                    algo = 'Simple'; 
+                }
+                // Pattern 1: Start + soft consonant + vowel end (Pavro, Kelna)
+                else if (pattern === 1) { 
+                    n = randomChoice(filteredStarts) + randomChoice(SOFT_MIDS) + randomChoice(['a','e','i','o']); 
+                    algo = 'Flowing'; 
+                }
+                // Pattern 2: Start + Start (tech feel: Pako, Velo)
+                else if (pattern === 2) { 
+                    const s1 = randomChoice(filteredStarts);
+                    const s2 = randomChoice(['ka','ko','la','lo','ma','mo','na','no','ra','ro','ta','to','va','vo','za','zo','xa','xo']);
+                    n = s1 + s2;
+                    algo = 'Tech'; 
+                }
+                // Pattern 3: Start + vowel + soft end (Pavian, Korian)
+                else if (pattern === 3) {
+                    n = randomChoice(filteredStarts) + randomChoice(['i','a','o']) + randomChoice(['an','on','en','ar','or','er','al','ix','us']);
+                    algo = 'Classic';
+                }
+                // Pattern 4: Start + double letter + vowel (Pallo, Kenna)  
+                else if (pattern === 4) {
+                    n = randomChoice(filteredStarts) + randomChoice(['ll','nn','rr']) + randomChoice(['a','e','i','o']);
+                    algo = 'Double';
+                }
+                // Pattern 5: Start + -ly/-fy/-ry ending (Pavely, Kofy)
+                else {
+                    n = randomChoice(filteredStarts) + randomChoice(['v','n','l','r','x','t']) + randomChoice(['y','ify','ely','ary','ory']);
+                    algo = 'Modern';
+                }
+                
+                n = n.charAt(0).toUpperCase() + n.slice(1).toLowerCase();
+                
+                // Skip if we've already shown this name
+                if (shownNames.has(n)) continue;
+                
+                if (n.length >= minLen && n.length <= maxLen && isPronounceable(n) && isClean(n)) {
+                    if (!names.find(x => x.name === n)) {
+                        names.push({ name: n, algorithm: algo });
+                    }
+                }
+            }
+            return names;
+        }
+        
+        // Favorites management
+        function saveFavorites() {
+            localStorage.setItem('brandvalidator_favorites', JSON.stringify(favorites));
+            updateFavoritesUI();
+        }
+        
+        function toggleFavorite(name, event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            if (favorites[name]) {
+                delete favorites[name];
+            } else {
+                // Find the result data if available
+                const result = allResults.find(r => r.name === name);
+                favorites[name] = {
+                    name,
+                    addedAt: new Date().toISOString(),
+                    score: result?.score || null,
+                    domains: result?.domains || null
+                };
+            }
+            saveFavorites();
+            applyFiltersAndSort();
+        }
+        
+        function removeFavorite(name, event) {
+            if (event) event.stopPropagation();
+            delete favorites[name];
+            saveFavorites();
+            applyFiltersAndSort();
+        }
+        
+        function updateFavoritesUI() {
+            const section = document.getElementById('favoritesSection');
+            const list = document.getElementById('favoritesList');
+            const count = document.getElementById('favCount');
+            const favNames = Object.keys(favorites);
+            
+            count.textContent = `(${favNames.length})`;
+            
+            if (favNames.length === 0) {
+                section.classList.remove('active');
+                return;
+            }
+            
+            section.classList.add('active');
+            list.innerHTML = favNames.map(name => `
+                <div class="favorite-tag" onclick="showDetail('${name}')">
+                    ${name}
+                    <span class="remove" onclick="removeFavorite('${name}', event)">×</span>
+                </div>
+            `).join('');
+        }
+        
+        function exportFavorites() {
+            const data = Object.values(favorites);
+            const text = data.map(f => f.name).join('\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'brandvalidator-favorites.txt';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function toggleModalFavorite() {
+            if (!currentModalName) return;
+            toggleFavorite(currentModalName);
+            updateModalFavoriteButton();
+        }
+        
+        function updateModalFavoriteButton() {
+            const btn = document.getElementById('modalFavorite');
+            const icon = document.getElementById('modalFavIcon');
+            const text = document.getElementById('modalFavText');
+            const isFav = favorites[currentModalName];
+            
+            if (isFav) {
+                btn.classList.add('active');
+                icon.textContent = '❤️';
+                text.textContent = 'Favorited';
+            } else {
+                btn.classList.remove('active');
+                icon.textContent = '🤍';
+                text.textContent = 'Add to Favorites';
+            }
+        }
+        
+        async function validateName(name) {
+            try {
+                const response = await fetch(`${API_BASE}/validate?name=${encodeURIComponent(name)}`);
+                if (response.ok) return response.json();
+            } catch (e) {}
+            return mockValidate(name);
+        }
+        
+        async function deepValidate(name) {
+            try {
+                const response = await fetch(`${API_BASE}/deep-validate?name=${encodeURIComponent(name)}`);
+                if (response.ok) return response.json();
+            } catch (e) {}
+            return mockDeepValidate(name);
+        }
+        
+        function mockValidate(name) {
+            const domainsAvail = { com: Math.random() > 0.6, ai: Math.random() > 0.4, io: Math.random() > 0.5, ch: Math.random() > 0.3 };
+            const availCount = Object.values(domainsAvail).filter(Boolean).length;
+            return {
+                name, algorithm: randomChoice(ALGORITHMS),
+                score: 60 + availCount * 10 + Math.floor(Math.random() * 10),
+                domains: domainsAvail,
+                domainCount: availCount,
+                npm_available: Math.random() > 0.3,
+                pypi_available: Math.random() > 0.3,
+                is_viable: Math.random() > 0.15,
+                blockers: Math.random() > 0.85 ? ['Similar trademark exists'] : [],
+                warnings: Math.random() > 0.7 ? ['Common word in Portuguese'] : []
+            };
+        }
+        
+        function mockDeepValidate(name) {
+            const base = mockValidate(name);
+            return {
+                ...base,
+                dictionary: { is_word: Math.random() > 0.8, meaning: null, languages_checked: ['en','de','fr','es','it','pt'] },
+                translations: { negative_meanings: [], checked_languages: 12 },
+                companies: {
+                    search_hits: Math.floor(Math.random() * 1000),
+                    top_results: [
+                        { title: `${name} - Example Company`, url: 'https://example.com', snippet: 'A sample company description...' }
+                    ]
+                },
+                trademarks: { found: Math.random() > 0.85, regions_checked: ['US', 'EU', 'CH', 'UK'] },
+                packages: { npm: base.npm_available, pypi: base.pypi_available, crates: Math.random() > 0.2 },
+                phonetics: { easy_to_spell: true, easy_to_pronounce: true, similar_to: [] },
+                domain_prices: { com: '$12/yr', ai: '$70/yr', io: '$40/yr', ch: 'CHF 15/yr' }
+            };
+        }
+        
+        function renderCard(result) {
+            const scoreClass = result.score >= 80 ? '' : (result.score >= 60 ? 'medium' : 'low');
+            const cardClass = !result.is_viable ? 'blocked' : (result.warnings?.length ? 'warning' : '');
+            const isFav = favorites[result.name];
+            
+            let domainsHtml = '';
+            if (result.domains) {
+                for (const [tld, available] of Object.entries(result.domains)) {
+                    domainsHtml += `<span class="domain-pill ${available ? 'available' : 'taken'}">.${tld}</span>`;
+                }
+            }
+            
+            const availDomains = result.domainCount || Object.values(result.domains || {}).filter(Boolean).length;
+            
+            return `
+                <div class="name-card ${cardClass} ${isFav ? 'favorited' : ''}" onclick="showDetail('${result.name}')" data-name="${result.name}" data-score="${result.score}" data-domains="${availDomains}" data-viable="${result.is_viable}">
+                    <div class="name-header">
+                        <span class="name-title">${result.name}</span>
+                        <span class="name-score ${scoreClass}">${result.score}</span>
+                    </div>
+                    <div class="domain-pills">${domainsHtml}</div>
+                    <div class="card-meta">
+                        <span>📦 npm: ${result.npm_available ? '✓' : '✗'}</span>
+                        <span>🐍 PyPI: ${result.pypi_available ? '✓' : '✗'}</span>
+                    </div>
+                    <button class="favorite-btn ${isFav ? 'active' : ''}" onclick="toggleFavorite('${result.name}', event)" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}">
+                        ${isFav ? '❤️' : '🤍'}
+                    </button>
+                </div>
+            `;
+        }
+        
+        function setFilter(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+            applyFiltersAndSort();
+        }
+        
+        function sortResults() {
+            applyFiltersAndSort();
+        }
+        
+        function applyFiltersAndSort() {
+            let filtered = [...allResults];
+            
+            // Apply filter
+            if (currentFilter === 'allDomains') {
+                filtered = filtered.filter(r => {
+                    const avail = Object.values(r.domains || {}).filter(Boolean).length;
+                    return avail === Object.keys(r.domains || {}).length;
+                });
+            } else if (currentFilter === 'viable') {
+                filtered = filtered.filter(r => r.is_viable);
+            } else if (currentFilter === 'favorites') {
+                filtered = filtered.filter(r => favorites[r.name]);
+            }
+            
+            // Apply sort
+            const sort = document.getElementById('sortSelect').value;
+            if (sort === 'score-desc') filtered.sort((a,b) => b.score - a.score);
+            else if (sort === 'score-asc') filtered.sort((a,b) => a.score - b.score);
+            else if (sort === 'domains-desc') filtered.sort((a,b) => (b.domainCount || 0) - (a.domainCount || 0));
+            else if (sort === 'alpha') filtered.sort((a,b) => a.name.localeCompare(b.name));
+            
+            const container = document.getElementById('resultsContainer');
+            if (filtered.length === 0 && currentFilter === 'favorites') {
+                container.innerHTML = '<div class="empty-state">No favorites yet. Click the 🤍 on any name to add it!</div>';
+            } else {
+                container.innerHTML = filtered.map(renderCard).join('');
+            }
+            document.getElementById('filteredCount').textContent = `Showing ${filtered.length} of ${allResults.length}`;
+        }
+        
+        async function showDetail(name) {
+            currentModalName = name;
+            const modal = document.getElementById('modalOverlay');
+            const body = document.getElementById('modalBody');
+            
+            document.getElementById('modalName').textContent = name;
+            updateModalFavoriteButton();
+            body.innerHTML = '<div class="loading"><div class="spinner"></div><p>Running deep validation...</p></div>';
+            modal.classList.add('active');
+            
+            const result = await deepValidate(name);
+            
+            document.getElementById('modalScore').textContent = `${result.score}/100`;
+            document.getElementById('modalScore').className = `modal-score ${result.score >= 80 ? '' : (result.score >= 60 ? 'warning' : 'bad')}`;
+            document.getElementById('modalAlgorithm').textContent = `Generated by: ${result.algorithm || 'Unknown'}`;
+            
+            // Build domain section
+            let domainHtml = '<div class="domain-grid">';
+            for (const [tld, avail] of Object.entries(result.domains || {})) {
+                const price = result.domain_prices?.[tld] || '';
+                domainHtml += `
+                    <div class="domain-item ${avail ? 'available' : 'taken'}">
+                        <span>${name.toLowerCase()}.${tld}</span>
+                        <span>${avail ? '✓ Available' : '✗ Taken'}</span>
+                        ${price ? `<span class="domain-price">${price}</span>` : ''}
+                    </div>`;
+            }
+            domainHtml += '</div>';
+            
+            // Build search results section
+            let searchHtml = '';
+            if (result.companies?.top_results?.length) {
+                searchHtml = '<div class="search-results">';
+                for (const r of result.companies.top_results.slice(0, 5)) {
+                    searchHtml += `
+                        <div class="search-result">
+                            <a href="${r.url}" target="_blank">${r.title}</a>
+                            <div class="snippet">${r.snippet || ''}</div>
+                        </div>`;
+                }
+                searchHtml += '</div>';
+            } else {
+                searchHtml = '<p style="color: #00ff88;">✓ No significant search results found - name is clean!</p>';
+            }
+            
+            // Trademark status
+            const tmStatus = result.trademarks?.found 
+                ? '<span class="status-badge bad">⚠️ Potential trademark found</span>'
+                : '<span class="status-badge good">✓ No trademarks found</span>';
+            
+            // Dictionary check
+            const dictStatus = result.dictionary?.is_word
+                ? `<span class="status-badge warning">📖 Is a word: ${result.dictionary.meaning || 'Yes'}</span>`
+                : '<span class="status-badge good">✓ Not a dictionary word (invented)</span>';
+            
+            // Package availability
+            let pkgHtml = '<div class="info-grid">';
+            pkgHtml += `<div class="info-item"><label>npm</label><div class="value">${result.packages?.npm ? '✓ Available' : '✗ Taken'}</div></div>`;
+            pkgHtml += `<div class="info-item"><label>PyPI</label><div class="value">${result.packages?.pypi ? '✓ Available' : '✗ Taken'}</div></div>`;
+            pkgHtml += `<div class="info-item"><label>crates.io</label><div class="value">${result.packages?.crates ? '✓ Available' : '✗ Taken'}</div></div>`;
+            pkgHtml += '</div>';
+            
+            // Negative meanings
+            let negHtml = '';
+            if (result.translations?.negative_meanings?.length) {
+                negHtml = '<ul style="color: #ff6666;">';
+                for (const m of result.translations.negative_meanings) {
+                    negHtml += `<li>${m}</li>`;
+                }
+                negHtml += '</ul>';
+            } else {
+                negHtml = `<p style="color: #00ff88;">✓ No negative meanings found (checked ${result.translations?.checked_languages || 0} languages)</p>`;
+            }
+            
+            body.innerHTML = `
+                <div class="report-section">
+                    <h3>🌐 Domain Availability</h3>
+                    ${domainHtml}
+                </div>
+                
+                <div class="report-section">
+                    <h3>📖 Dictionary & Meaning</h3>
+                    ${dictStatus}
+                    <p style="margin-top: 10px; color: #888; font-size: 0.9rem;">Languages checked: ${result.dictionary?.languages_checked?.join(', ') || 'N/A'}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h3>🌍 Multi-Language Check</h3>
+                    ${negHtml}
+                </div>
+                
+                <div class="report-section">
+                    <h3>🔍 Web Search Results</h3>
+                    <p style="margin-bottom: 10px; color: #888;">Found approximately <strong>${result.companies?.search_hits || 0}</strong> results</p>
+                    ${searchHtml}
+                </div>
+                
+                <div class="report-section">
+                    <h3>™️ Trademark Status</h3>
+                    ${tmStatus}
+                    <p style="margin-top: 10px; color: #888; font-size: 0.9rem;">Regions checked: ${result.trademarks?.regions_checked?.join(', ') || 'N/A'}</p>
+                </div>
+                
+                <div class="report-section">
+                    <h3>📦 Package Registries</h3>
+                    ${pkgHtml}
+                </div>
+                
+                <div class="report-section">
+                    <h3>🗣️ Phonetics</h3>
+                    <div class="info-grid">
+                        <div class="info-item"><label>Easy to spell</label><div class="value">${result.phonetics?.easy_to_spell ? '✓ Yes' : '⚠️ Maybe difficult'}</div></div>
+                        <div class="info-item"><label>Easy to pronounce</label><div class="value">${result.phonetics?.easy_to_pronounce ? '✓ Yes' : '⚠️ Maybe difficult'}</div></div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function closeModal(event) {
+            if (!event || event.target === document.getElementById('modalOverlay')) {
+                document.getElementById('modalOverlay').classList.remove('active');
+                currentModalName = null;
+            }
+        }
+        
+        function getRequiredDomains() {
+            const required = [];
+            if (document.getElementById('req-com').checked) required.push('com');
+            if (document.getElementById('req-ai').checked) required.push('ai');
+            if (document.getElementById('req-io').checked) required.push('io');
+            if (document.getElementById('req-ch').checked) required.push('ch');
+            return required;
+        }
+        
+        function meetsRequirements(result, requiredDomains) {
+            if (requiredDomains.length === 0) return true;
+            for (const tld of requiredDomains) {
+                if (!result.domains?.[tld]) return false;
+            }
+            return true;
+        }
+        
+        async function llmFilterNames(names) {
+            console.log('LLM filter input:', names.length, 'names:', names.slice(0, 10));
+            try {
+                const response = await fetch(`${API_BASE}/filter-names`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ names })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('LLM filter output:', data.filtered_count, 'of', data.original_count, ':', data.names?.slice(0, 10));
+                    return data.names || names;
+                }
+            } catch (e) {
+                console.log('LLM filter error:', e);
+            }
+            return names; // Fallback
+        }
+        
+        async function generateNames() {
+            // Reset for new search
+            shownNames.clear();
+            allResults = [];
+            pendingCandidates = [];
+            
+            const minLen = parseInt(document.getElementById('minLen').value);
+            const maxLen = parseInt(document.getElementById('maxLen').value);
+            const count = parseInt(document.getElementById('count').value);
+            const requiredDomains = getRequiredDomains();
+            const useSmartFilter = document.getElementById('smartFilter').checked;
+            const targetResults = 10; // Show 10 at a time
+            
+            // Store settings for "Show Next 10"
+            currentSettings = { minLen, maxLen, count, requiredDomains, useSmartFilter };
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('filterBar').classList.remove('active');
+            document.getElementById('generateBtn').disabled = true;
+            document.getElementById('nextTenBtn').style.display = 'none';
+            
+            const letterText = selectedLetters.size > 0 ? ` starting with ${[...selectedLetters].join(', ')}` : '';
+            document.getElementById('loadingText').textContent = `Generating candidates${letterText}...`;
+            
+            // Generate and filter until we have enough good candidates
+            let candidates = [];
+            let totalGenerated = 0;
+            let totalFiltered = 0;
+            const minGoodCandidates = 30; // Need at least this many to work with
+            const maxAttempts = 5; // Don't loop forever
+            let attempt = 0;
+            
+            while (candidates.length < minGoodCandidates && attempt < maxAttempts) {
+                attempt++;
+                const batchSize = attempt === 1 ? count * 3 : count * 2;
+                
+                document.getElementById('loadingText').textContent = `Generating batch ${attempt}...`;
+                let newCandidates = generateCandidates(batchSize, minLen, maxLen, selectedLetters);
+                totalGenerated += newCandidates.length;
+                
+                // Apply LLM Smart Filter if enabled
+                if (useSmartFilter && newCandidates.length > 0) {
+                    document.getElementById('loadingText').textContent = `🧠 AI filtering ${newCandidates.length} names (batch ${attempt})...`;
+                    const candidateNames = newCandidates.map(c => c.name);
+                    const goodNames = await llmFilterNames(candidateNames);
+                    const goodNamesSet = new Set(goodNames.map(n => n.toLowerCase()));
+                    
+                    const beforeCount = newCandidates.length;
+                    newCandidates = newCandidates.filter(c => goodNamesSet.has(c.name.toLowerCase()));
+                    totalFiltered += (beforeCount - newCandidates.length);
+                    console.log(`Smart filter batch ${attempt}: ${beforeCount} → ${newCandidates.length} names`);
+                }
+                
+                // Add new candidates (avoid duplicates)
+                for (const c of newCandidates) {
+                    if (!candidates.find(x => x.name.toLowerCase() === c.name.toLowerCase())) {
+                        candidates.push(c);
+                    }
+                }
+                
+                document.getElementById('loadingText').textContent = `Found ${candidates.length} quality names so far...`;
+            }
+            
+            console.log(`Total: generated ${totalGenerated}, filtered out ${totalFiltered}, kept ${candidates.length}`);
+            pendingCandidates = [...candidates];
+            
+            const reqText = requiredDomains.length > 0 ? ` (requiring .${requiredDomains.join(', .')})` : '';
+            document.getElementById('loadingText').textContent = `Validating ${pendingCandidates.length} quality names${reqText}...`;
+            
+            let checked = 0;
+            let skipped = 0;
+            
+            while (allResults.length < targetResults && pendingCandidates.length > 0) {
+                const candidate = pendingCandidates.shift();
+                checked++;
+                
+                const result = await validateName(candidate.name);
+                result.algorithm = candidate.algorithm;
+                result.domainCount = Object.values(result.domains || {}).filter(Boolean).length;
+                
+                if (meetsRequirements(result, requiredDomains)) {
+                    allResults.push(result);
+                    shownNames.add(candidate.name);
+                    document.getElementById('loadingText').textContent = `Found ${allResults.length}/${targetResults} valid names (checked ${checked}, skipped ${skipped})${reqText}`;
+                } else {
+                    skipped++;
+                }
+            }
+            
+            allResults.sort((a, b) => b.score - a.score);
+            
+            const filterNote = useSmartFilter ? ' (AI-filtered)' : '';
+            document.getElementById('resultsContainer').innerHTML = allResults.map(renderCard).join('');
+            document.getElementById('resultCount').textContent = `${allResults.length} names${filterNote} (${skipped} skipped for missing domains)`;
+            document.getElementById('filteredCount').textContent = `Showing ${allResults.length} of ${allResults.length}`;
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('results').classList.add('active');
+            document.getElementById('filterBar').classList.add('active');
+            document.getElementById('generateBtn').disabled = false;
+            
+            // Show "Next 10" button if we have more candidates or can generate more
+            document.getElementById('nextTenBtn').style.display = 'inline-flex';
+            document.getElementById('nextTenInfo').textContent = `${pendingCandidates.length} quality candidates remaining`;
+        }
+        
+        async function showNextTen() {
+            const { minLen, maxLen, count, requiredDomains, useSmartFilter } = currentSettings;
+            const targetResults = 10;
+            
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('nextTenBtn').disabled = true;
+            
+            // Generate more candidates if needed - keep trying until we have enough
+            if (pendingCandidates.length < 20) {
+                let attempt = 0;
+                const maxAttempts = 3;
+                
+                while (pendingCandidates.length < 30 && attempt < maxAttempts) {
+                    attempt++;
+                    document.getElementById('loadingText').textContent = `Generating more candidates (batch ${attempt})...`;
+                    let newCandidates = generateCandidates(count * 2, minLen, maxLen, selectedLetters);
+                    
+                    // Apply LLM filter to new candidates
+                    if (useSmartFilter && newCandidates.length > 0) {
+                        document.getElementById('loadingText').textContent = `🧠 AI filtering ${newCandidates.length} new names...`;
+                        const candidateNames = newCandidates.map(c => c.name);
+                        const goodNames = await llmFilterNames(candidateNames);
+                        const goodNamesSet = new Set(goodNames.map(n => n.toLowerCase()));
+                        newCandidates = newCandidates.filter(c => goodNamesSet.has(c.name.toLowerCase()));
+                    }
+                    
+                    // Add only new unique candidates
+                    for (const c of newCandidates) {
+                        if (!pendingCandidates.find(x => x.name.toLowerCase() === c.name.toLowerCase()) && !shownNames.has(c.name)) {
+                            pendingCandidates.push(c);
+                        }
+                    }
+                }
+            }
+            
+            const reqText = requiredDomains.length > 0 ? ` (requiring .${requiredDomains.join(', .')})` : '';
+            document.getElementById('loadingText').textContent = `Finding next 10 names${reqText}...`;
+            
+            let newResults = [];
+            let checked = 0;
+            let skipped = 0;
+            
+            while (newResults.length < targetResults && pendingCandidates.length > 0) {
+                const candidate = pendingCandidates.shift();
+                
+                // Skip if already shown
+                if (shownNames.has(candidate.name)) continue;
+                
+                checked++;
+                const result = await validateName(candidate.name);
+                result.algorithm = candidate.algorithm;
+                result.domainCount = Object.values(result.domains || {}).filter(Boolean).length;
+                
+                if (meetsRequirements(result, requiredDomains)) {
+                    newResults.push(result);
+                    shownNames.add(candidate.name);
+                    document.getElementById('loadingText').textContent = `Found ${newResults.length}/${targetResults} more names...`;
+                } else {
+                    skipped++;
+                }
+            }
+            
+            // Add to existing results
+            allResults = [...allResults, ...newResults];
+            allResults.sort((a, b) => b.score - a.score);
+            
+            const filterNote = useSmartFilter ? ' (AI-filtered)' : '';
+            document.getElementById('resultsContainer').innerHTML = allResults.map(renderCard).join('');
+            document.getElementById('resultCount').textContent = `${allResults.length} names total${filterNote}`;
+            document.getElementById('filteredCount').textContent = `Showing ${allResults.length} of ${allResults.length}`;
+            document.getElementById('nextTenInfo').textContent = `${pendingCandidates.length} quality candidates remaining`;
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('nextTenBtn').disabled = false;
+            
+            applyFiltersAndSort();
+        }
+        
+        async function validateSingle() {
+            const name = document.getElementById('validateName').value.trim();
+            if (!name) return;
+            await showDetail(name);
+        }
+        
+        document.getElementById('validateName').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') validateSingle();
+        });
+        
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+</body>
+</html>

@@ -11,7 +11,7 @@ from typing import List, Optional
 from dataclasses import dataclass
 
 # API Key - stored here for the tool
-BRAVE_API_KEY = os.environ.get('BRAVE_API_KEY', 'BSAey8qCOTwLfJfLbbxGpjfZugJ0qee')
+BRAVE_API_KEY = os.environ.get('BRAVE_API_KEY', '')
 
 
 @dataclass

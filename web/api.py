@@ -29,7 +29,7 @@ app.add_middleware(
 )
 
 # Config
-BRAVE_API_KEY = os.environ.get('BRAVE_API_KEY', 'REMOVED')
+BRAVE_API_KEY = os.environ.get('BRAVE_API_KEY', '')
 RATE_LIMIT_DELAY = 1.1  # Brave free tier: 1 req/sec
 
 # Track last request time for rate limiting

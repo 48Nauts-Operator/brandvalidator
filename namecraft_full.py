@@ -22,7 +22,7 @@ from typing import List, Optional, Tuple
 # CONFIG
 # ============================================================
 
-BRAVE_API_KEY = 'REMOVED'
+BRAVE_API_KEY = os.environ.get('BRAVE_API_KEY', '')
 RATE_LIMIT_DELAY = 1.1  # seconds between API calls
 
 # ============================================================
